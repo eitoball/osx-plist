@@ -24,6 +24,8 @@ module DL
       def extern(proto)
         extern_original(proto.gsub(/\(void\)/, '()'))
       end
+
+      alias :import_symbol :symbol
     end
   end
 end
@@ -135,10 +137,6 @@ module CoreFoundation
         alias :"#{new_mname}" :"#{mname}"
         module_function new_mname.to_sym
       end
-    end
-    
-    DL::Importable.module_eval do
-      alias :import_symbol :symbol
     end
   else
     CFDictionaryApplierFunction = bind('void *CFDictionaryApplierFunction(void *, void *, void *)', :temp)

@@ -15,9 +15,15 @@ class String
   end
 end
 
+module DL
+  if const_defined?(:Importable)
+    Importer = Importable
+  end
+end
+
 module CoreFoundation
   OLD_DL = DL.const_defined?(:Importable)
-  extend OLD_DL ? DL::Importable : DL::Importer
+  extend DL::Importer
   
   dlload '/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation'
   

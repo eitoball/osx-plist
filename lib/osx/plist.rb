@@ -9,6 +9,10 @@ class String
     raise 'state must be true or false' unless state.is_a?(TrueClass) || state.is_a?(FalseClass)
     @blob = state
   end
+
+  def blob!
+    @blob = true
+  end
 end
 
 module CoreFoundation
@@ -323,7 +327,7 @@ module OSX
       bytes = CoreFoundation.CFDataGetBytePtr(plist)
       len = CoreFoundation.CFDataGetLength(plist)
       str = bytes.to_s(len)
-      str.blob = true
+      str.blob!
       str
     end
 
@@ -437,7 +441,7 @@ class Object
     end
     plist = OSX::PropertyList.convert_object(self)
     data = OSX::PropertyList.convert_plist_to_string(plist, format)
-    data.blob = true if [:xml1, :binary1].include?(type)
+    data.blob! if [:xml1, :binary1].include?(type)
     data
   end
 end

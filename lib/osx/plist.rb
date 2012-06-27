@@ -25,6 +25,19 @@ module DL
         extern_original(proto.gsub(/\(void\)/, '()'))
       end
 
+      alias :import_original :import
+      def import(name, rettype, argtypes = nil)
+        sym = import_original(name, rettype, argtypes)
+        if /^[A-Z]/ =~ name
+          mname = name[0, 1].downcase + name[1..-1]
+          module_eval do
+            alias :"#{name}" :"#{mname}"
+            module_function :"#{name}"
+          end
+        end
+        sym
+      end
+
       alias :import_symbol :symbol
     end
   end
@@ -131,14 +144,6 @@ module CoreFoundation
   end
   
   if OLD_DL
-    @SYM.each do |mname, sigs|
-      if mname =~ /^cF/
-        new_mname = mname[0, 1].upcase + mname[1..-1]
-        alias :"#{new_mname}" :"#{mname}"
-        module_function new_mname.to_sym
-      end
-    end
-  else
     CFDictionaryApplierFunction = bind('void *CFDictionaryApplierFunction(void *, void *, void *)', :temp)
     CFArrayApplierFunction = bind('void *CFArrayApplierFunction(void *, void *)', :temp)
   end

@@ -18,6 +18,13 @@ end
 module DL
   if const_defined?(:Importable)
     Importer = Importable
+    
+    module Importable
+      alias :extern_original :extern
+      def extern(proto)
+        extern_original(proto.gsub(/\(void\)/, '()'))
+      end
+    end
   end
 end
 
@@ -118,7 +125,7 @@ module CoreFoundation
     'CFAbsoluteTime CFDateGetAbsoluteTime(CFDateRef)',
     'CFDateRef CFDateCreate(CFAllocatorRef, CFAbsoluteTime)',
   ].each do |signature|
-    extern(OLD_DL ? signature.gsub(/\(void\)/, '()') : signature)
+    extern(signature)
   end
   
   if OLD_DL
